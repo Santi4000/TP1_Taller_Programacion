@@ -8,15 +8,16 @@ int tomarNum(){
 
 void chooseCell(int **arr, int dato, int tamaño){ // toma el arreglo, el entero a ingresar y la cantidad de filas/columnas
     int contador = 0;
-    int coords [tamaño*2];
+    int coords [tamaño * tamaño * 2];
     for (int i=0; i<tamaño; i++){
         for (int j=0; j<tamaño; j++){
-            if (arr[i][j] == 0) //Comprobar si la celda està vacìa. Si es verdadero, guardar las coordenadas y aumentar 2 al contador.
-                contador = contador + 2;
-                coords[contador-1] = i;
-                coords[contador] = j;
+            if (arr[i][j] == 0){ //Comprobar si la celda està vacìa. Si es verdadero, guardar las coordenadas y aumentar 2 al contador.
+                coords[contador] = i;
+                coords[contador+1] = j;
+                contador += 2;
+            }
         }
     }
-    int num = rand() % (contador / 2 + 1) * 2; //nùmero aleatorio con respecto a la cantidad de celdas vacìa
-    arr [coords[num-1]] [coords[num]] = data; //se le asigna el valor, paràmetro de la funciòn
+    int num = (rand() % (contador / 2)) * 2; //nùmero aleatorio con respecto a la cantidad de celdas vacìa
+    arr [coords[num]] [coords[num+1]] = dato; //se le asigna el valor, paràmetro de la funciòn
 }
