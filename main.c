@@ -32,79 +32,97 @@ int main(int argc, char *argv[]) {
     Pila *pila = crearPila();
     
     int estado = 0;
-    char opcion;
-    
-    printf("\n=== 2048 - Tablero %dx%d ===\n", TAM, TAM);
-    printf("Comandos: w(arriba) s(abajo) a(izquierda) d(derecha) u(deshacer) q(salir)\n\n");
-    
-    while (estado == 0) {
-        imprimirTablero(tablero, TAM);
-        printf("Movimiento: ");
-        scanf(" %c", &opcion);
-        
-        // Guardar estado actual antes del movimiento
-        int **copia = copiarTablero(tablero, TAM);
-        
-        int movio = 0;
-        
-        switch (opcion) {
-            case 'a':
-                movio = movIzquierda(tablero, TAM);
-                break;
-            case 'd':
-                movio = movDerecha(tablero, TAM);
-                break;
-            case 'w':
-                movio = movArriba(tablero, TAM);
-                break;
-            case 's':
-                movio = movAbajo(tablero, TAM);
-                break;
-            case 'u': {
-                int **anterior = desapilarPila(pila);
-                if (anterior) {
-                    destruirTablero(tablero, TAM);
-                    tablero = anterior;
-                    printf("Movimiento deshecho!\n");
-                } else {
-                    printf("No hay movimientos para deshacer!\n");
-                }
-                destruirTablero(copia, TAM);  // AGREGAR ESTA LÍNEA
-                continue;
-            }
-            case 'q':
-                printf("¡Gracias por jugar!\n");
+char opcion;
+
+printf("\n=== 2048 - Tablero %dx%d ===\n", TAM, TAM);
+printf("Comandos: w(arriba) s(abajo) a(izquierda) d(derecha) u(deshacer) q(salir)\n\n");
+
+while(estado == 0){
+
+    imprimirTablero(tablero, TAM);
+
+    printf("Movimiento: ");
+    scanf(" %c", &opcion);
+
+    int **copia = copiarTablero(tablero, TAM);
+
+    int movio = 0;
+    int direccion = -1;
+
+    switch(opcion){
+
+        case 'a':
+            direccion = 0;
+            break;
+
+        case 'd':
+            direccion = 1;
+            break;
+
+        case 'w':
+            direccion = 2;
+            break;
+
+        case 's':
+            direccion = 3;
+            break;
+
+        case 'u':{
+            int **anterior = desapilarPila(pila);
+
+            if(anterior){
                 destruirTablero(tablero, TAM);
-                destruirPila(pila);
-                return 0;
-            default:
-                printf("Comando no válido! Use w/a/s/d/u/q\n");
-                destruirTablero(copia, TAM);
-                continue;
-        }
-        
-        if (movio) {
-            // Apilar el estado anterior
-            apilarPila(pila, copia);
-            
-            // Agregar nueva ficha
-            elegirCelda(tablero, tomarNum(), TAM);
-            
-            // Verificar estado del juego
-            estado = estadoJuego(tablero, TAM);
-            
-            if (estado == 2) {
-                imprimirTablero(tablero, TAM);
-                printf("¡FELICIDADES! ¡Llegaste a 2048!\n");
-            } else if (estado == 1) {
-                imprimirTablero(tablero, TAM);
-                printf("GAME OVER - No hay movimientos posibles\n");
+                tablero = anterior;
+                printf("Movimiento deshecho!\n");
             }
-        } else {
+            else{
+                printf("No hay movimientos para deshacer!\n");
+            }
+
             destruirTablero(copia, TAM);
-            printf("Movimiento no válido - intenta otra dirección\n");
+            continue;
         }
+
+        case 'q':
+            printf("¡Gracias por jugar!\n");
+            destruirTablero(copia, TAM);
+            destruirTablero(tablero, TAM);
+            destruirPila(pila);
+            return 0;
+
+        default:
+            printf("Comando no válido. Use w/a/s/d/u/q\n");
+            destruirTablero(copia, TAM);
+            continue;
     }
+
+    movio = mover(tablero, TAM, direccion);
+
+    if(movio){
+
+        apilarPila(pila, copia);
+
+        elegirCelda(tablero, tomarNum(), TAM);
+
+        estado = estadoJuego(tablero, TAM);
+
+        if(estado == 2){
+            imprimirTablero(tablero, TAM);
+            printf("¡FELICIDADES! ¡Llegaste a 2048!\n");
+        }
+        else if(estado == 1){
+            imprimirTablero(tablero, TAM);
+            printf("GAME OVER - No hay movimientos posibles\n");
+        }
+
+    }
+    else{
+
+        destruirTablero(copia, TAM);
+        printf("Movimiento no válido - intenta otra dirección\n");
+
+    }
+}
     
     // Liberar memoria
     destruirTablero(tablero, TAM);
